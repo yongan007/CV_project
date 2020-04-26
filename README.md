@@ -1,87 +1,86 @@
+#  Objects Arrangement Robot
 
-## Prerequisites
-To download the prerequisites for this package (except for ROS itself), navigate to the package folder and run:
-```
-$ sudo pip install -r requirements.txt
-```
+__Objects Arrangement Robot Demo Video - [[YouTube]](https://youtu.be/xkUNAQp0_Gk)__
+## Environment
 
-## Installation
-Navigate to your catkin workspace and run:
-```
-$ catkin build yolov3_pytorch_ros
-```
-## Basic Usage
-1. First, make sure to put your weights in the [models](models) folder. For the **training process** in order to use custom objects, please refer to the original [YOLO page](https://pjreddie.com/darknet/yolo/). As an example, to download pre-trained weights from the COCO data set, go into the [models](models) folder and run:
-```
-wget http://pjreddie.com/media/files/yolov3.weights
-```
+* __Ubuntu 18.04__ 
+* __ROS Melodic__
+* __python 2.7__
 
-2. Modify the parameters in the [launch file](launch/detector.launch) and launch it. You will need to change the `image_topic` parameter to match your camera, and the `weights_name`, `config_name` and `classes_name` parameters depending on what you are trying to do.
+***
+## Installing
 
-## Start yolov3_pytorch_ros node
-```
-$ roslaunch yolov3_pytorch_ros detector.launch
-```
+1. **Install ROS**
 
-### Node parameters
+    Follow these [ROS Melodic installation instructions](http://wiki.ros.org/melodic/Installation).
+    You can select any of the default configurations in step 1.4; even the
+    ROS-Base (Bare Bones) package (`ros-melodic-ros-base`) is enough.
 
-* **`image_topic`** (string)
+2. **Download the code**
+    ```
+    $ cd ~/catkin_ws/src
+    $ git clone this repository 
+    ```
 
-    Subscribed camera topic.
+3. **Install python dependencies**
+    ```
+    $ cd ~/catkin_ws/src/Parts-Arrangement-Robot
+    $ pip install -r requirements.txt
+    ```
 
-* **`weights_name`** (string)
+4. **Install ROS dependencies**
+    ```
+    $ cd ~/catkin_ws
+    $ rosdep install --from-paths src -i --rosdistro melodic
+    $ sudo apt-get install ros-melodic-rosbash ros-melodic-ros-comm
+    ```
 
-    Weights to be used from the [models](models) folder.
+5. **Build**
+    ```
+    $ cd ~/catkin_ws
+    $ catkin_make
+    ```
+## Quick Start
 
-* **`config_name`** (string)
+* `$ roslaunch gripper_ur5 gazebo_env_setting.launch`
+* `$ roslaunch gripper_ur5_moveit_config moveit_planning_execution.launch`
+* `$ roslaunch yolov3_pytorch_ros detector.launch`
+* `$ rosrun gripper_ur5 robot_sorting_yolo.py`
 
-    The name of the configuration file in the [config](config) folder. Use `yolov3.cfg` for YOLOv3, `yolov3-tiny.cfg` for tiny YOLOv3, and `yolov3-voc.cfg` for YOLOv3-VOC.
 
-* **`classes_name`** (string)
+## The main filse to check are :
 
-    The name of the file for the detected classes in the [classes](classes) folder. Use `coco.names` for COCO, and `voc.names` for VOC.
+* /yolov3_pytorch_ros/src : These yolo detector  
+* /gripper_ur5/src/robot_sorting_yolo.py : This is path planing script which take messages from yolo detector. 
 
-* **`publish_image`** (bool)
+## Node info - Launch
 
-    Set to true to get the camera image along with the detected bounding boxes, or false otherwise.
+* __To simulate the robot environment launch the following:__
+   
+   ```
+    $ roslaunch gripper_ur5 gazebo_env_setting.launch
+    ```
 
-* **`detected_objects_topic`** (string)
+* __For setting up the MoveIt! nodes to allow motion planning run:__
+    
+    ```
+    $ roslaunch gripper_ur5_moveit_config moveit_planning_execution.launch`
+    ```
 
-    Published topic with the detected bounding boxes.
+* __Start screw grasp detection node:__
+ 
+    ```
+     $ roslaunch yolov3_pytorch_ros detector.launch
+     ```
 
-* **`detections_image_topic`** (string)
 
-    Published topic with the detected bounding boxes on top of the image.
+* __Start screw sorting robot node:__
+    
+    ```
+    $ rosrun gripper_ur5 robot_sorting_yolo.py
+    ```
 
-* **`confidence`** (float)
 
-    Confidence threshold for detected objects.
-
-### Subscribed topics
-
-* **`image_topic`** (sensor_msgs::Image)
-
-    Subscribed camera topic.
-
-### Published topics    
-
-* **`detected_objects_topic`** (yolov3_pytorch_ros::BoundingBoxes)
-
-    Published topic with the detected bounding boxes.
-
-* **`detections_image_topic`** (sensor_msgs::Image)
-
-    Published topic with the detected bounding boxes on top of the image (only published if `publish_image` is set to true).
-
-## Citing
-
-The YOLO methods used in this software are described in the paper: [You Only Look Once: Unified, Real-Time Object Detection](https://arxiv.org/abs/1506.02640).
-
-If you are using this package, please add the following citation to your publication:
-
-    @misc{vasilopoulos_pavlakos_yolov3ros_2019,
-      author = {Vasileios Vasilopoulos and Georgios Pavlakos},
-      title = {{yolov3_pytorch_ros}: Object Detection for {ROS} using {PyTorch}},
-      howpublished = {\url{https://github.com/vvasilo/yolov3_pytorch_ros}},
-      year = {2019},
-    }
+ ## Reference:
+ 
+ https://github.com/Kminseo/Parts-Arrangement-Robot.git
